@@ -2,7 +2,10 @@ import React, {useState} from 'react';
 import './css/App.css';
 import {Card} from "./models/Card";
 import {CardList} from "./components/CardList";
-import {useCardEdit} from "./hooks/useCardEdit";
+import {useCardChange} from "./hooks/useCardChange";
+import cardData from "./allCards.json";
+import _ from "lodash";
+import {useOwnedCards} from "./hooks/useOwnedCards";
 
 type CardDeckContextType = {
     handleCardDelete: (id: string)=>void,
@@ -13,20 +16,22 @@ type CardDeckContextType = {
 
 export const CardDeckContext = React.createContext<CardDeckContextType>({} as CardDeckContextType);
 
-const starterDeck = [
-    new Card("Blobra", 1, "None", "2, 5, 3, 1", "blobra.png"),
-    new Card("Grat", 2, "None", "7, 1, 1, 3", "grat.png"),
-    new Card("Creeps", 2, "Lightning", "5, 2, 2, 5", "creeps.png"),
-    new Card("T-Rexaur", 4, "None", "4, 7, 6, 2", "trexaur.png"),
-    new Card("Ruby Dragon", 5, "Fire", "7, 4, 2, 7", "rubydragon.png")
-];
+const allCards = cardData.map(card => new Card(card.name, card.level, card.element, card.north, card.east, card.south, card.west, card.image));
+
+const starterDeck = _.take(_.shuffle(allCards), 5);
+const getRandomCards = _.take(_.shuffle(allCards), 3);
+
+const cardsOwned = [...starterDeck, ...getRandomCards]
 
 function App() {
 
     const [selectedCardId, setSelectedCardId] = useState<string>();
     const [cardHand, setCardHand] = useState(starterDeck);
+    const [ownedCards, setOwnedCards] = useState(cardsOwned);
     const selectedCard = cardHand.find(card => card.id === selectedCardId);
-    const {cardModal} = useCardEdit(selectedCard, setSelectedCardId);
+    const {changeCardModal} = useCardChange(selectedCard, setSelectedCardId, allCards);
+    const {ownedCardModal} = useOwnedCards(selectedCardId, setSelectedCardId, ownedCards);
+
 
     const cardDeckContextValue: CardDeckContextType = {
         handleCardAdd,
@@ -48,7 +53,7 @@ function App() {
     }
 
     function handleCardAdd(){
-        const newCard = new Card("", 0, "", "", "");
+        const newCard = new Card("", 0, "", 0, 0, 0, 0, "");
         setSelectedCardId(newCard.id);
         setCardHand([...cardHand, newCard]);
     }
@@ -72,7 +77,8 @@ function App() {
         </div>
         <div className="container-bottom">
             <CardList cardDeck={cardHand}/>
-            {cardModal}
+            {changeCardModal}
+            {ownedCardModal}
         </div>
     </CardDeckContext.Provider>
   );

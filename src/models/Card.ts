@@ -6,7 +6,10 @@ export class Card {
         public name: string,
         public level: number,
         public element: string,
-        public ranks: string,
+        public north: number,
+        public east: number,
+        public south: number,
+        public west: number,
         public image: string
     ) {
         this.id = uuidv4()

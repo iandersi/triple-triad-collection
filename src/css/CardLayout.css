@@ -1,10 +1,13 @@
 
 .card {
-    width: 120px;
+    width: 130px;
 }
 
 .card-body {
     padding: 0.5em;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
 }
 
 .card-text {
@@ -13,13 +16,12 @@
 
 .card-title {
     margin: 0;
+    font-size: 1em;
 }
 
 .title-and-edit-delete-button-container {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: left;
 }
 
 .edit-delete-button-container {
@@ -34,4 +36,17 @@
     border: none;
     background: none;
     padding: 1px;
+}
+
+.change {
+    font-size: 0.7vw;
+}
+
+.danger {
+    font-size: 0.7vw;
+    color: red;
+}
+
+.card-text {
+    font-size: 0.7vw;
 }
