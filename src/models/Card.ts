@@ -14,4 +14,8 @@ export class Card {
     ) {
         this.id = uuidv4()
     }
+
+    copyCard(){
+        return new Card(this.name, this.level, this.element, this.north, this.east, this.south, this.west, this.image)
+    }
 }

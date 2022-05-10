@@ -1,29 +1,29 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Card} from "../models/Card";
-import {Button, Dropdown, Modal} from "react-bootstrap";
+import {Button, Modal} from "react-bootstrap";
+import {CardList} from "../components/CardList";
+import _ from "lodash";
 
-export function useOwnedCards(selectedCardId: string | undefined, setSelectedCardId: (id: string | undefined)=>void, ownedCards: Card[]) {
+export function useOwnedCards(ownedCards: Card[]) {
 
-    const handleClose = () => setSelectedCardId(undefined);
+    const sortOwnedCards = _.sortBy(ownedCards, ["level"])
 
-    const cardModal = <Modal show={!!selectedCardId} onHide={handleClose}>
-        <Modal.Header>test</Modal.Header>
-        <Modal.Body>
-            <Dropdown>
-                <Dropdown.Toggle variant="success" id="dropdown-basic">
-                    Choose Card
-                </Dropdown.Toggle>
+    const [isShow, setIsShow] = useState(false);
 
-                <Dropdown.Menu>
-                    {ownedCards.map(card => {return (<Dropdown.Item onClick={()=> console.log("click")}>{card.name}</Dropdown.Item>)})}
-                </Dropdown.Menu>
-            </Dropdown>
-        </Modal.Body>
-        <Modal.Footer>
-            <Button>Save changes</Button>
-            <Button onClick={handleClose}>Close</Button>
-        </Modal.Footer>
-    </Modal>;
+    const open = () => setIsShow(true);
+    const close = () => setIsShow(false);
 
-    return {ownedCardModal: cardModal}
+    const cardModal =
+        <Modal size="xl" show={isShow} onHide={close}>
+            <Modal.Header>Your cards</Modal.Header>
+            <Modal.Body>
+                <CardList cardDeck={sortOwnedCards} showButtons={false}/>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button>Save changes</Button>
+                <Button onClick={close}>Close</Button>
+            </Modal.Footer>
+        </Modal>;
+
+    return {ownedCardModal: cardModal, open: open}
 }

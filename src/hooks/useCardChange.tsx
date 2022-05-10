@@ -2,7 +2,7 @@ import React from 'react';
 import {Card} from "../models/Card";
 import {Button, Dropdown, Modal} from "react-bootstrap";
 
-export function useCardChange(selectedCard: Card | undefined, setSelectedCardId: (id: string | undefined)=>void, allCards: Card[]) {
+export function useCardChange(selectedCard: Card | undefined, setSelectedCardId: (id: string | undefined)=>void, ownedCards: Card[]) {
 
     const handleClose = () => setSelectedCardId(undefined);
 
@@ -15,7 +15,7 @@ export function useCardChange(selectedCard: Card | undefined, setSelectedCardId:
                 </Dropdown.Toggle>
 
                 <Dropdown.Menu>
-                    {allCards.map(card => {return (<Dropdown.Item onClick={()=> console.log("click")}>{card.name}</Dropdown.Item>)})}
+                    {ownedCards.map(card => {return (<Dropdown.Item onClick={()=> console.log("click")}>{card.name}</Dropdown.Item>)})}
                 </Dropdown.Menu>
             </Dropdown>
         </Modal.Body>
