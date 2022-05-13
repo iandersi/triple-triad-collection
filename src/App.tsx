@@ -1,19 +1,22 @@
 import React, {useState} from 'react';
 import './css/App.css';
 import {Card} from "./models/Card";
-import {CardList} from "./components/CardList";
+import {CardsInHandList} from "./components/CardsInHandList";
 import {useCardChange} from "./hooks/useCardChange";
 import cardData from "./allCards.json";
 import _ from "lodash";
 import {useOwnedCards} from "./hooks/useOwnedCards";
 import {Button} from "react-bootstrap";
+import {GameBoardLayout} from "./components/GameBoardLayout";
+import {OpponentCardsHandList} from "./components/OpponentCardsHandList";
 
 type CardDeckContextType = {
     handleCardDelete: (id: string) => void,
     handleCardSelect: (id: string) => void,
     handleCardAdd: () => void,
     handleCardChange: (id: string, card: Card) => void,
-    handleSelectedCardToPlay: (card: Card) => void
+    handleSelectedCardToPlay: (card: Card) => void,
+    selectedCardToPlay: Card | undefined
 }
 
 export const CardDeckContext = React.createContext<CardDeckContextType>({} as CardDeckContextType);
@@ -21,28 +24,42 @@ export const CardDeckContext = React.createContext<CardDeckContextType>({} as Ca
 const allCards = cardData.map(card => new Card(card.name, card.level, card.element, card.north, card.east, card.south, card.west, card.image));
 
 const starterDeck = _.take(_.shuffle(allCards), 5);
+const opponentDeck = _.take(_.shuffle(allCards), 5);
 const getRandomCards = _.take(_.shuffle(allCards), 10);
 
 const cardsOwned = [...starterDeck, ...getRandomCards].map(card => card.copyCard());
+const opponentCardsOwned = [...opponentDeck].map(card => card.copyCard());
+
+
+const gameBoardArray = [
+    [, ,],
+    [, ,],
+    [, ,],
+];
 
 function App() {
 
     const [selectedCardId, setSelectedCardId] = useState<string>();
     const [cardHand, setCardHand] = useState(starterDeck);
+    const [opponentHand, setOpponentHand] = useState(opponentCardsOwned);
     const [ownedCards, setOwnedCards] = useState(cardsOwned);
     const [selectedCardToPlay, setSelectedCardToPlay] = useState<Card>();
+    const [cardsOnGameBoard, setCardsOnGameBoard] = useState<(Card | undefined)[][]>(gameBoardArray);
 
     const selectedCard = cardHand.find(card => card.id === selectedCardId);
 
     const {changeCardModal} = useCardChange(selectedCard, setSelectedCardId, ownedCards);
     const {ownedCardModal, open} = useOwnedCards(ownedCards);
 
+    console.log(selectedCardToPlay)
+
     const cardDeckContextValue: CardDeckContextType = {
         handleCardAdd,
         handleCardDelete: handleCardRemove,
         handleCardSelect,
         handleCardChange,
-        handleSelectedCardToPlay
+        handleSelectedCardToPlay,
+        selectedCardToPlay
     }
 
     function handleCardRemove(id: string) {
@@ -71,27 +88,39 @@ function App() {
     }
 
     function handleSelectedCardToPlay(card: Card) {
-        setSelectedCardToPlay(card);
+        if (card === selectedCardToPlay) {
+            setSelectedCardToPlay(undefined);
+        } else {
+            setSelectedCardToPlay(card);
+        }
     }
 
 
     return (
         <CardDeckContext.Provider value={cardDeckContextValue}>
-            <div className="container-top">
-                <p>nönönönö</p>
-            </div>
-            <div className="container-middle">
-                <p>board</p>
-            </div>
-            <div className="container-bottom">
-                <CardList cardDeck={cardHand}/>
-                <div className="add-card-buttons">
-                    <Button onClick={() => open()}>Owned Cards</Button>
-                    <Button>All Cards</Button>
+
+            <div className="all-content-container">
+
+                <div>
+                    <div>
+                        <OpponentCardsHandList cardDeck={opponentHand}/>
+                    </div>
+                    <GameBoardLayout/>
+                    <div>
+                        <CardsInHandList cardDeck={cardHand}/>
+                    </div>
                 </div>
-                {changeCardModal}
-                {ownedCardModal}
+
+                <div className="card-management-bar">
+                    <button onClick={() => open()}>Owned Cards</button>
+                    <button>All Cards</button>
+                </div>
+
             </div>
+
+            {changeCardModal}
+            {ownedCardModal}
+
         </CardDeckContext.Provider>
     );
 }

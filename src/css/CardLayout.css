@@ -1,6 +1,6 @@
 
 .card {
-    width: 130px;
+    width: 5vw;
 }
 
 .card-body {
@@ -16,7 +16,7 @@
 
 .card-title {
     margin: 0;
-    font-size: 1em;
+    font-size: 0.8em;
 }
 
 .title-and-edit-delete-button-container {
@@ -39,15 +39,15 @@
 }
 
 .change {
-    font-size: 0.7vw;
+    font-size: 0.5vw;
 }
 
 .danger {
-    font-size: 0.7vw;
+    font-size: 0.5vw;
     color: red;
 }
 
 .card-text {
-    font-size: 0.7vw;
+    font-size: 0.5vw;
 }
 

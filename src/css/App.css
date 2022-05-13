@@ -1,22 +1,46 @@
 @import url(CardLayout.css);
 @import url(CardList.css);
 @import url(UseOwnedCards.css);
-
+@import url(CardsInHandList.css);
+@import url(GameBoardLayout.css);
 
 html, body {
     height: 100%;
 }
 
 #root {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    min-height: 100%;
+    height: 100%;
 }
 
-.container-bottom {
+.all-content-container {
+    height: 100%;
     display: flex;
-    align-items: center;
+    flex-direction: column;
     justify-content: center;
-    margin-bottom: 20px;
+
+}
+
+.card-management-bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    background: black;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+}
+
+.card-management-bar button {
+    border: none;
+    color: white;
+    padding: 5px;
+    background: #383838;
+    border-radius: 5px;
+    margin: 5px;
+}
+
+.card-management-bar button:hover {
+    background: #f1a961;
+    color: black;
+    border: none;
 }

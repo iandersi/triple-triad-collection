@@ -4,17 +4,15 @@ import CardLayout from "./CardLayout";
 
 
 type CardListProps = {
-    cardDeck: Card[],
-    showButtons?: boolean //Optional boolean
+    cardDeck: Card[]
 }
-                                    //Default value = true, because boolean is optional
-export function CardList({cardDeck, showButtons = true}: CardListProps){
+
+export function CardList({cardDeck}: CardListProps){
     return (
         <>
             <div className="card-deck-container">
-                {cardDeck.map(card => {return (
-                        <CardLayout key={card.id} card={card} showButtonsAndCardInfo={showButtons}/>
-                    )})}
+                {cardDeck.map(card => {return (<CardLayout card={card} showButtonsAndCardInfo={false}/>
+                )})}
             </div>
         </>
     )

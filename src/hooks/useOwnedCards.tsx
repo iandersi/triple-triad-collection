@@ -17,7 +17,7 @@ export function useOwnedCards(ownedCards: Card[]) {
         <Modal size="xl" show={isShow} onHide={close}>
             <Modal.Header>Your cards</Modal.Header>
             <Modal.Body>
-                <CardList cardDeck={sortOwnedCards} showButtons={false}/>
+                <CardList cardDeck={sortOwnedCards}/>
             </Modal.Body>
             <Modal.Footer>
                 <Button>Save changes</Button>

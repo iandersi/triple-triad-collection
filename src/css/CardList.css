@@ -1,8 +1,0 @@
-.card-deck-container {
-    display: flex;
-}
-
-.add-card-buttons {
-    display: flex;
-    flex-direction: column;
-}

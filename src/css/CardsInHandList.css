@@ -1,0 +1,32 @@
+.card.highlight {
+    background: #383838;
+    color: white;
+    box-shadow: 0 0 20px 20px #f1a961;
+    z-index: 1;
+    transform: scale(1.05);
+}
+
+.card:hover {
+    background: #383838;
+    color: white;
+    z-index: 1;
+    transform: scale(1.05);
+}
+
+.card.highlight .change, .card:hover .change {
+    color: white;
+}
+
+.card {
+    margin-right: 2px;
+    margin-left: 2px;
+    box-sizing: content-box;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.card-hand {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+}
