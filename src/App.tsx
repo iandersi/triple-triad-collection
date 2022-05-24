@@ -9,6 +9,7 @@ import {useOwnedCards} from "./hooks/useOwnedCards";
 import {Button} from "react-bootstrap";
 import {GameBoardLayout} from "./components/GameBoardLayout";
 import {OpponentCardsHandList} from "./components/OpponentCardsHandList";
+import {useAllCards} from "./hooks/useAllCards";
 
 type CardDeckContextType = {
     handleCardDelete: (id: string) => void,
@@ -16,7 +17,8 @@ type CardDeckContextType = {
     handleCardAdd: () => void,
     handleCardChange: (id: string, card: Card) => void,
     handleSelectedCardToPlay: (card: Card) => void,
-    selectedCardToPlay: Card | undefined
+    selectedCardToPlay: Card | undefined,
+    addCardToGameBoard: (row: number, position: number)=> void
 }
 
 export const CardDeckContext = React.createContext<CardDeckContextType>({} as CardDeckContextType);
@@ -31,10 +33,10 @@ const cardsOwned = [...starterDeck, ...getRandomCards].map(card => card.copyCard
 const opponentCardsOwned = [...opponentDeck].map(card => card.copyCard());
 
 
-const gameBoardArray = [
-    [, ,],
-    [, ,],
-    [, ,],
+const gameBoardArray: (Card | undefined)[][] = [
+    [, , ,],
+    [, , ,],
+    [, , ,],
 ];
 
 function App() {
@@ -50,6 +52,7 @@ function App() {
 
     const {changeCardModal} = useCardChange(selectedCard, setSelectedCardId, ownedCards);
     const {ownedCardModal, open} = useOwnedCards(ownedCards);
+    const {allCardsModal, openModal} = useAllCards(allCards);
 
     console.log(selectedCardToPlay)
 
@@ -59,7 +62,8 @@ function App() {
         handleCardSelect,
         handleCardChange,
         handleSelectedCardToPlay,
-        selectedCardToPlay
+        selectedCardToPlay,
+        addCardToGameBoard
     }
 
     function handleCardRemove(id: string) {
@@ -95,6 +99,19 @@ function App() {
         }
     }
 
+    function addCardToGameBoard(row: number, position: number){
+        if (!selectedCardToPlay) {
+            return
+        }
+
+        const newGameBoard = [...cardsOnGameBoard];
+        newGameBoard[row][position] = selectedCardToPlay;
+        setCardsOnGameBoard(newGameBoard);
+        handleCardRemove(selectedCardToPlay.id);
+        setSelectedCardToPlay(undefined);
+    }
+
+    console.log(cardsOnGameBoard);
 
     return (
         <CardDeckContext.Provider value={cardDeckContextValue}>
@@ -105,7 +122,7 @@ function App() {
                     <div>
                         <OpponentCardsHandList cardDeck={opponentHand}/>
                     </div>
-                    <GameBoardLayout/>
+                    <GameBoardLayout cardsOnGameBoard={cardsOnGameBoard}/>
                     <div>
                         <CardsInHandList cardDeck={cardHand}/>
                     </div>
@@ -113,13 +130,14 @@ function App() {
 
                 <div className="card-management-bar">
                     <button onClick={() => open()}>Owned Cards</button>
-                    <button>All Cards</button>
+                    <button onClick={()=> openModal()}>All Cards</button>
                 </div>
 
             </div>
 
             {changeCardModal}
             {ownedCardModal}
+            {allCardsModal}
 
         </CardDeckContext.Provider>
     );

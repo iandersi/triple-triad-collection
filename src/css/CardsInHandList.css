@@ -1,7 +1,7 @@
 .card.highlight {
     background: #383838;
     color: white;
-    box-shadow: 0 0 20px 20px #f1a961;
+    box-shadow: 0 0 15px 15px #f1a961;
     z-index: 1;
     transform: scale(1.05);
 }
