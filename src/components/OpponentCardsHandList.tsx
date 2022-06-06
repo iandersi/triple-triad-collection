@@ -14,7 +14,7 @@ export function OpponentCardsHandList({cardDeck}: CardListProps){
         <>
             <div className="card-hand">
                 {cardDeck.map(card => {return (
-                    <CardLayout key={card.id} card={card} showButtonsAndCardInfo={false} opponentCards={true}/>
+                    <CardLayout key={card.id} card={card} showButtonsAndCardInfo={false} opponentCard={true}/>
                 )})}
             </div>
         </>

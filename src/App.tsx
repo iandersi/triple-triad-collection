@@ -111,6 +111,12 @@ function App() {
         setSelectedCardToPlay(undefined);
     }
 
+    function opponentPlayCardTurn(){
+        for (let i = 0; i == gameBoardArray.length; i++) {
+
+        }
+    }
+
     console.log(cardsOnGameBoard);
 
     return (

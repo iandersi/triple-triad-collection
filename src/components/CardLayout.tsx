@@ -7,20 +7,28 @@ type CardLayoutProps = {
     card: CardModel,
     showButtonsAndCardInfo: boolean, //Mandatory boolean
     highlight?: boolean,
-    opponentCards?: boolean
+    opponentCard?: boolean,
+    isCardPlayable?: boolean
 }
 
-export default function CardLayout({card, showButtonsAndCardInfo, highlight, opponentCards}: CardLayoutProps) {
+export default function CardLayout({card, showButtonsAndCardInfo, highlight, opponentCard, isCardPlayable}: CardLayoutProps) {
     const {handleCardDelete, handleCardSelect, handleSelectedCardToPlay} = useContext(CardDeckContext);
     let cardImagePath;
     let booleanClassName: string;
 
-    if (!opponentCards) {
+    if (!opponentCard) {
         cardImagePath = "images/blue/"+card.image;
     } else {
         cardImagePath = "images/red/"+card.image;
     }
 
+    function handleOnClick(){
+        if (!opponentCard && isCardPlayable) {
+            handleSelectedCardToPlay(card);
+        } else {
+            return;
+        }
+    }
 
     if (highlight) {
         booleanClassName = "highlight";
@@ -30,7 +38,7 @@ export default function CardLayout({card, showButtonsAndCardInfo, highlight, opp
 
     return (
         <>
-            <Card onClick={()=>handleSelectedCardToPlay(card)} className={booleanClassName}>
+            <Card onClick={()=> handleOnClick()} className={booleanClassName}>
                 <Card.Img variant="top" src={cardImagePath}/>
                 <Card.Body>
                     <div className="title-and-edit-delete-button-container">
