@@ -13,14 +13,8 @@ type CardLayoutProps = {
 
 export default function CardLayout({card, showButtonsAndCardInfo, highlight, opponentCard, isCardPlayable}: CardLayoutProps) {
     const {handleCardDelete, handleCardSelect, handleSelectedCardToPlay} = useContext(CardDeckContext);
-    let cardImagePath;
+    let cardImagePath = card.cardImagePath();
     let booleanClassName: string;
-
-    if (!opponentCard) {
-        cardImagePath = "images/blue/"+card.image;
-    } else {
-        cardImagePath = "images/red/"+card.image;
-    }
 
     function handleOnClick(){
         if (!opponentCard && isCardPlayable) {

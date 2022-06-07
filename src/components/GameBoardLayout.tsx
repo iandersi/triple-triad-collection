@@ -8,12 +8,12 @@ type GameBoardLayoutProps = {
 }
 
 export function GameBoardLayout({cardsOnGameBoard}: GameBoardLayoutProps) {
-    const {addCardToGameBoard, selectedCardToPlay} = useContext(CardDeckContext);
+    const {addCardToGameBoard} = useContext(CardDeckContext);
     let defaultImagePath: string = "images/back/TTTurquoiseBack.webp";
 
     function returnImagePath(row: number, position: number){
-        if (cardsOnGameBoard[row][position]?.image) {
-            return "images/blue/"+cardsOnGameBoard[row][position]?.image;
+        if (cardsOnGameBoard[row][position]) {
+            return cardsOnGameBoard[row][position]?.cardImagePath();
         } else {
             return defaultImagePath;
         }

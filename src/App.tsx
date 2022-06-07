@@ -6,7 +6,6 @@ import {useCardChange} from "./hooks/useCardChange";
 import cardData from "./allCards.json";
 import _ from "lodash";
 import {useOwnedCards} from "./hooks/useOwnedCards";
-import {Button} from "react-bootstrap";
 import {GameBoardLayout} from "./components/GameBoardLayout";
 import {OpponentCardsHandList} from "./components/OpponentCardsHandList";
 import {useAllCards} from "./hooks/useAllCards";
@@ -18,19 +17,19 @@ type CardDeckContextType = {
     handleCardChange: (id: string, card: Card) => void,
     handleSelectedCardToPlay: (card: Card) => void,
     selectedCardToPlay: Card | undefined,
-    addCardToGameBoard: (row: number, position: number)=> void
+    addCardToGameBoard: (row: number, position: number) => void
 }
 
 export const CardDeckContext = React.createContext<CardDeckContextType>({} as CardDeckContextType);
 
-const allCards = cardData.map(card => new Card(card.name, card.level, card.element, card.north, card.east, card.south, card.west, card.image));
+const allCards = cardData.map(card => new Card(card.name, card.level, card.element, card.north, card.east, card.south, card.west, card.image, false));
 
 const starterDeck = _.take(_.shuffle(allCards), 5);
 const opponentDeck = _.take(_.shuffle(allCards), 5);
 const getRandomCards = _.take(_.shuffle(allCards), 10);
 
-const cardsOwned = [...starterDeck, ...getRandomCards].map(card => card.copyCard());
-const opponentCardsOwned = [...opponentDeck].map(card => card.copyCard());
+const cardsOwned = [...starterDeck, ...getRandomCards].map(card => card.copyCard(false));
+const opponentCardsOwned = opponentDeck.map(card => card.copyCard(true));
 
 
 const gameBoardArray: (Card | undefined)[][] = [
@@ -54,7 +53,7 @@ function App() {
     const {ownedCardModal, open} = useOwnedCards(ownedCards);
     const {allCardsModal, openModal} = useAllCards(allCards);
 
-    console.log(selectedCardToPlay)
+    // console.log(selectedCardToPlay)
 
     const cardDeckContextValue: CardDeckContextType = {
         handleCardAdd,
@@ -79,7 +78,7 @@ function App() {
     }
 
     function handleCardAdd() {
-        const newCard = new Card("", 0, "", 0, 0, 0, 0, "");
+        const newCard = new Card("", 0, "", 0, 0, 0, 0, "", false);
         setSelectedCardId(newCard.id);
         setCardHand([...cardHand, newCard]);
     }
@@ -99,7 +98,7 @@ function App() {
         }
     }
 
-    function addCardToGameBoard(row: number, position: number){
+    function addCardToGameBoard(row: number, position: number) {
         if (!selectedCardToPlay) {
             return
         }
@@ -111,18 +110,71 @@ function App() {
         setSelectedCardToPlay(undefined);
     }
 
-    function opponentPlayCardTurn(){
-        for (let i = 0; i == gameBoardArray.length; i++) {
-
+    function opponentPlayCardTurn() {
+        let gameBoardCoordinates = getNextOpponentMove();
+        if (gameBoardCoordinates === null) {
+            console.log('No available slots!');
+            return;
         }
+
+        let row = gameBoardCoordinates[0];
+        let slot = gameBoardCoordinates[1];
+
+        console.log(gameBoardCoordinates);
+        let cardToPlay = getRandomOpponentCard();
+        const newGameBoard = [...cardsOnGameBoard];
+        newGameBoard[row][slot] = cardToPlay;
+        setCardsOnGameBoard(newGameBoard);
+
     }
 
-    console.log(cardsOnGameBoard);
+    function getRandomOpponentCard(){
+        return opponentHand[Math.floor(Math.random()*opponentHand.length)];
+    }
+
+    function getNextOpponentMove(){
+        for (let row = 0; row < gameBoardArray.length; row++) {
+            for (let slot = 0; slot < gameBoardArray[row].length; slot++){
+                let cardOnBoard = gameBoardArray[row][slot];
+                if (!cardOnBoard){
+                    continue;
+                }
+                if (cardOnBoard.opponent) {
+                    continue;
+                }
+
+                let northSlotIndex = row-1;
+                let westSlotIndex  = slot-1;
+                let southSlotIndex  = row+1;
+                let eastSlotIndex  = slot+1;
+
+                if (isValidGameBoardIndex(northSlotIndex) && gameBoardArray[northSlotIndex][slot] === undefined) {
+                    return [northSlotIndex, slot];
+                } else if (isValidGameBoardIndex(westSlotIndex) && gameBoardArray[row][westSlotIndex] === undefined) {
+                    return [row, westSlotIndex];
+                } else if (isValidGameBoardIndex(southSlotIndex) && gameBoardArray[southSlotIndex][slot] === undefined) {
+                    return [southSlotIndex, slot];
+                } else if (isValidGameBoardIndex(eastSlotIndex)  && gameBoardArray[row][eastSlotIndex] === undefined) {
+                    return [row, eastSlotIndex];
+                }
+
+            }
+        }
+        return null;
+    }
+
+    function isValidGameBoardIndex(index: number){
+        return index >= 0 && index <=2;
+    }
+
+    // console.log(cardsOnGameBoard);
 
     return (
         <CardDeckContext.Provider value={cardDeckContextValue}>
 
             <div className="all-content-container">
+
+                <button onClick={() => opponentPlayCardTurn()}>Test</button>
 
                 <div>
                     <div>
@@ -136,7 +188,7 @@ function App() {
 
                 <div className="card-management-bar">
                     <button onClick={() => open()}>Owned Cards</button>
-                    <button onClick={()=> openModal()}>All Cards</button>
+                    <button onClick={() => openModal()}>All Cards</button>
                 </div>
 
             </div>

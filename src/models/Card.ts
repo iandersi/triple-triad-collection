@@ -10,12 +10,21 @@ export class Card {
         public east: number,
         public south: number,
         public west: number,
-        public image: string
+        public image: string,
+        public opponent: boolean
     ) {
         this.id = uuidv4()
     }
 
-    copyCard(){
-        return new Card(this.name, this.level, this.element, this.north, this.east, this.south, this.west, this.image)
+    copyCard(opponent: boolean){
+        return new Card(this.name, this.level, this.element, this.north, this.east, this.south, this.west, this.image, opponent)
+    }
+
+    cardImagePath(){
+        if (this.opponent) {
+            return "images/red/"+this.image;
+        } else {
+            return "images/blue/"+this.image;
+        }
     }
 }
