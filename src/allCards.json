@@ -872,9 +872,9 @@
     "name": "Minotaur",
     "level": 8,
     "element": "Earth",
-    "north": 5,
-    "east": 1,
-    "south": 9,
+    "north": 9,
+    "east": 5,
+    "south": 2,
     "west": 9,
     "image":"TTMinotaur.webp"
   },
@@ -1062,10 +1062,11 @@
     "name": "Rinoa",
     "level": 10,
     "element": "None",
+    "element": "None",
     "north": 4,
     "east": 10,
-    "south": 10,
-    "west": 2,
+    "south": 2,
+    "west": 10,
     "image":"TTRinoa.webp"
   },
   {

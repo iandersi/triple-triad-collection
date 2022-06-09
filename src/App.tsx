@@ -57,19 +57,26 @@ function App() {
 
     const cardDeckContextValue: CardDeckContextType = {
         handleCardAdd,
-        handleCardDelete: handleCardRemove,
+        handleCardDelete: handlePlayerCardRemove,
         handleCardSelect,
         handleCardChange,
         handleSelectedCardToPlay,
         selectedCardToPlay,
-        addCardToGameBoard
+        addCardToGameBoard: playerPlayCardTurn
     }
 
-    function handleCardRemove(id: string) {
+    function handlePlayerCardRemove(id: string) {
         console.log(id);
         const newArray = cardHand.filter(card => card.id !== id);
         console.log(newArray);
         setCardHand(newArray);
+    }
+
+    function handleOpponentCardRemove(id: string) {
+        console.log(id);
+        const newArray = opponentHand.filter(card => card.id !== id);
+        console.log(newArray);
+        setOpponentHand(newArray);
     }
 
     function handleCardSelect(id: string) {
@@ -98,16 +105,20 @@ function App() {
         }
     }
 
-    function addCardToGameBoard(row: number, position: number) {
+    function playerPlayCardTurn(row: number, position: number) {
         if (!selectedCardToPlay) {
             return
         }
-
+        convertCardsOnGameBoard(row, position, selectedCardToPlay);
         const newGameBoard = [...cardsOnGameBoard];
         newGameBoard[row][position] = selectedCardToPlay;
         setCardsOnGameBoard(newGameBoard);
-        handleCardRemove(selectedCardToPlay.id);
+        handlePlayerCardRemove(selectedCardToPlay.id);
         setSelectedCardToPlay(undefined);
+        setTimeout(() => {
+            opponentPlayCardTurn()
+        }, 1000);
+
     }
 
     function opponentPlayCardTurn() {
@@ -122,31 +133,78 @@ function App() {
 
         console.log(gameBoardCoordinates);
         let cardToPlay = getRandomOpponentCard();
+        convertCardsOnGameBoard(row, slot, cardToPlay);
         const newGameBoard = [...cardsOnGameBoard];
         newGameBoard[row][slot] = cardToPlay;
         setCardsOnGameBoard(newGameBoard);
+        handleOpponentCardRemove(cardToPlay.id);
 
     }
 
-    function getRandomOpponentCard(){
-        return opponentHand[Math.floor(Math.random()*opponentHand.length)];
+    function getRandomOpponentCard() {
+        return opponentHand[Math.floor(Math.random() * opponentHand.length)];
     }
 
-    function getNextOpponentMove(){
+    function convertCardsOnGameBoard(row: number, slot: number, playedCard: Card) {
+
+        let northSlotIndex = row - 1;
+        let westSlotIndex = slot - 1;
+        let southSlotIndex = row + 1;
+        let eastSlotIndex = slot + 1;
+
+        if (isValidGameBoardIndex(northSlotIndex)) {
+            let northCard = gameBoardArray[northSlotIndex][slot];
+            if (northCard) {
+                if (playedCard.north > northCard.south) {
+                    northCard.opponent = playedCard.opponent;
+                }
+            }
+        }
+
+        if (isValidGameBoardIndex(westSlotIndex)) {
+            let westCard = gameBoardArray[row][westSlotIndex];
+            if (westCard) {
+                if (playedCard.west > westCard.east) {
+                    westCard.opponent = playedCard.opponent;
+                }
+            }
+        }
+
+        if (isValidGameBoardIndex(southSlotIndex)) {
+            let southCard = gameBoardArray[southSlotIndex][slot];
+            if (southCard) {
+                if (playedCard.south > southCard.north) {
+                    southCard.opponent = playedCard.opponent;
+                }
+            }
+        }
+
+        if (isValidGameBoardIndex(eastSlotIndex)) {
+            let eastCard = gameBoardArray[row][eastSlotIndex];
+            if (eastCard) {
+                if (playedCard.east > eastCard.west) {
+                    eastCard.opponent = playedCard.opponent;
+                }
+            }
+        }
+
+    }
+
+    function getNextOpponentMove() {
         for (let row = 0; row < gameBoardArray.length; row++) {
-            for (let slot = 0; slot < gameBoardArray[row].length; slot++){
+            for (let slot = 0; slot < gameBoardArray[row].length; slot++) {
                 let cardOnBoard = gameBoardArray[row][slot];
-                if (!cardOnBoard){
+                if (!cardOnBoard) {
                     continue;
                 }
                 if (cardOnBoard.opponent) {
                     continue;
                 }
 
-                let northSlotIndex = row-1;
-                let westSlotIndex  = slot-1;
-                let southSlotIndex  = row+1;
-                let eastSlotIndex  = slot+1;
+                let northSlotIndex = row - 1;
+                let westSlotIndex = slot - 1;
+                let southSlotIndex = row + 1;
+                let eastSlotIndex = slot + 1;
 
                 if (isValidGameBoardIndex(northSlotIndex) && gameBoardArray[northSlotIndex][slot] === undefined) {
                     return [northSlotIndex, slot];
@@ -154,7 +212,7 @@ function App() {
                     return [row, westSlotIndex];
                 } else if (isValidGameBoardIndex(southSlotIndex) && gameBoardArray[southSlotIndex][slot] === undefined) {
                     return [southSlotIndex, slot];
-                } else if (isValidGameBoardIndex(eastSlotIndex)  && gameBoardArray[row][eastSlotIndex] === undefined) {
+                } else if (isValidGameBoardIndex(eastSlotIndex) && gameBoardArray[row][eastSlotIndex] === undefined) {
                     return [row, eastSlotIndex];
                 }
 
@@ -163,9 +221,10 @@ function App() {
         return null;
     }
 
-    function isValidGameBoardIndex(index: number){
-        return index >= 0 && index <=2;
+    function isValidGameBoardIndex(index: number) {
+        return index >= 0 && index <= 2;
     }
+
 
     // console.log(cardsOnGameBoard);
 
@@ -174,7 +233,7 @@ function App() {
 
             <div className="all-content-container">
 
-                <button onClick={() => opponentPlayCardTurn()}>Test</button>
+                {/*<button onClick={() => opponentPlayCardTurn()}>Test</button>*/}
 
                 <div>
                     <div>
