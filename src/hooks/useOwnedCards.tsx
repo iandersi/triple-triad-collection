@@ -4,9 +4,9 @@ import {Button, Modal} from "react-bootstrap";
 import {CardList} from "../components/CardList";
 import _ from "lodash";
 
-export function useOwnedCards(ownedCards: Card[]) {
+export function useOwnedCards(cards: Card[]) {
 
-    const sortOwnedCards = _.sortBy(ownedCards, ["level"])
+    const sortOwnedCards = _.sortBy(cards, ["level"])
 
     const [isShow, setIsShow] = useState(false);
 

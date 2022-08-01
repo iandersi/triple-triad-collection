@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import './css/App.css';
 import {Card} from "./models/Card";
 import {CardsInHandList} from "./components/CardsInHandList";
@@ -9,6 +9,7 @@ import {useOwnedCards} from "./hooks/useOwnedCards";
 import {GameBoardLayout} from "./components/GameBoardLayout";
 import {OpponentCardsHandList} from "./components/OpponentCardsHandList";
 import {useAllCards} from "./hooks/useAllCards";
+import {PlayedCard} from "./models/PlayedCard";
 
 type CardDeckContextType = {
     handleCardDelete: (id: string) => void,
@@ -16,8 +17,7 @@ type CardDeckContextType = {
     handleCardAdd: () => void,
     handleCardChange: (id: string, card: Card) => void,
     handleSelectedCardToPlay: (card: Card) => void,
-    selectedCardToPlay: Card | undefined,
-    addCardToGameBoard: (row: number, position: number) => void
+    selectedCardToPlay: Card | undefined
 }
 
 export const CardDeckContext = React.createContext<CardDeckContextType>({} as CardDeckContextType);
@@ -31,13 +31,6 @@ const getRandomCards = _.take(_.shuffle(allCards), 10);
 const cardsOwned = [...starterDeck, ...getRandomCards].map(card => card.copyCard(false));
 const opponentCardsOwned = opponentDeck.map(card => card.copyCard(true));
 
-
-const gameBoardArray: (Card | undefined)[][] = [
-    [, , ,],
-    [, , ,],
-    [, , ,],
-];
-
 function App() {
 
     const [selectedCardId, setSelectedCardId] = useState<string>();
@@ -45,13 +38,19 @@ function App() {
     const [opponentHand, setOpponentHand] = useState(opponentCardsOwned);
     const [ownedCards, setOwnedCards] = useState(cardsOwned);
     const [selectedCardToPlay, setSelectedCardToPlay] = useState<Card>();
-    const [cardsOnGameBoard, setCardsOnGameBoard] = useState<(Card | undefined)[][]>(gameBoardArray);
-
+    const [gameboard, setGameboard] = useState<PlayedCard[]>([]);
+    console.log(gameboard);
     const selectedCard = cardHand.find(card => card.id === selectedCardId);
 
     const {changeCardModal} = useCardChange(selectedCard, setSelectedCardId, ownedCards);
     const {ownedCardModal, open} = useOwnedCards(ownedCards);
     const {allCardsModal, openModal} = useAllCards(allCards);
+
+    useEffect(()=>{
+        setTimeout(() => {
+            opponentTurn();
+        }, 1000);
+    }, [cardHand]);
 
     // console.log(selectedCardToPlay)
 
@@ -61,26 +60,25 @@ function App() {
         handleCardSelect,
         handleCardChange,
         handleSelectedCardToPlay,
-        selectedCardToPlay,
-        addCardToGameBoard: playerPlayCardTurn
+        selectedCardToPlay
     }
 
     function handlePlayerCardRemove(id: string) {
-        console.log(id);
+        // console.log(id);
         const newArray = cardHand.filter(card => card.id !== id);
-        console.log(newArray);
+        // console.log(newArray);
         setCardHand(newArray);
     }
 
     function handleOpponentCardRemove(id: string) {
-        console.log(id);
+        // console.log(id);
         const newArray = opponentHand.filter(card => card.id !== id);
-        console.log(newArray);
+        // console.log(newArray);
         setOpponentHand(newArray);
     }
 
     function handleCardSelect(id: string) {
-        console.log(id);
+        // console.log(id);
         setSelectedCardId(id);
     }
 
@@ -105,25 +103,22 @@ function App() {
         }
     }
 
-    function playerPlayCardTurn(row: number, position: number) {
-        if (!selectedCardToPlay) {
-            return
+    function playerTurn(row: number, slot: number)  {
+        if (!selectedCardToPlay){
+            return;
         }
-        convertCardsOnGameBoard(row, position, selectedCardToPlay);
-        const newGameBoard = [...cardsOnGameBoard];
-        newGameBoard[row][position] = selectedCardToPlay;
-        setCardsOnGameBoard(newGameBoard);
+        let playedCard = new PlayedCard(selectedCardToPlay, slot, row);
+        convertCardsOnGameBoard(playedCard);
+        const newGameboard = [...gameboard, playedCard];
+        setGameboard(newGameboard);
         handlePlayerCardRemove(selectedCardToPlay.id);
         setSelectedCardToPlay(undefined);
-        setTimeout(() => {
-            opponentPlayCardTurn()
-        }, 1000);
-
+        console.log(gameboard);
     }
 
-    function opponentPlayCardTurn() {
+    function opponentTurn(){
         let gameBoardCoordinates = getNextOpponentMove();
-        if (gameBoardCoordinates === null) {
+        if (gameBoardCoordinates === undefined) {
             console.log('No available slots!');
             return;
         }
@@ -131,115 +126,95 @@ function App() {
         let row = gameBoardCoordinates[0];
         let slot = gameBoardCoordinates[1];
 
-        console.log(gameBoardCoordinates);
         let cardToPlay = getRandomOpponentCard();
-        convertCardsOnGameBoard(row, slot, cardToPlay);
-        const newGameBoard = [...cardsOnGameBoard];
-        newGameBoard[row][slot] = cardToPlay;
-        setCardsOnGameBoard(newGameBoard);
-        handleOpponentCardRemove(cardToPlay.id);
-
+        let playedCard = new PlayedCard(cardToPlay, slot, row);
+        convertCardsOnGameBoard(playedCard);
+        const newGameBoard = [...gameboard, playedCard];
+        setGameboard(newGameBoard);
+        handleOpponentCardRemove(playedCard.card.id);
     }
+
 
     function getRandomOpponentCard() {
         return opponentHand[Math.floor(Math.random() * opponentHand.length)];
     }
 
-    function convertCardsOnGameBoard(row: number, slot: number, playedCard: Card) {
+    function convertCardsOnGameBoard(playedSlot: PlayedCard) {
+        let north = playedSlot.row - 1;
+        let west = playedSlot.slot - 1;
+        let south = playedSlot.row + 1;
+        let east = playedSlot.slot + 1;
 
-        let northSlotIndex = row - 1;
-        let westSlotIndex = slot - 1;
-        let southSlotIndex = row + 1;
-        let eastSlotIndex = slot + 1;
-
-        if (isValidGameBoardIndex(northSlotIndex)) {
-            let northCard = gameBoardArray[northSlotIndex][slot];
-            if (northCard) {
-                if (playedCard.north > northCard.south) {
-                    northCard.opponent = playedCard.opponent;
-                }
+        let northSlot = gameboard.find(gameboardSlot => gameboardSlot.slot === playedSlot.slot && gameboardSlot.row === north);
+        if (northSlot) {
+            if (playedSlot.card.north > northSlot.card.south) {
+                northSlot.card.opponent = playedSlot.card.opponent;
             }
         }
 
-        if (isValidGameBoardIndex(westSlotIndex)) {
-            let westCard = gameBoardArray[row][westSlotIndex];
-            if (westCard) {
-                if (playedCard.west > westCard.east) {
-                    westCard.opponent = playedCard.opponent;
-                }
+        let westSlot = gameboard.find(gameboardSlot => gameboardSlot.slot === west && gameboardSlot.row === playedSlot.row);
+        if (westSlot) {
+            if (playedSlot.card.west > westSlot.card.east) {
+                westSlot.card.opponent = playedSlot.card.opponent;
             }
         }
 
-        if (isValidGameBoardIndex(southSlotIndex)) {
-            let southCard = gameBoardArray[southSlotIndex][slot];
-            if (southCard) {
-                if (playedCard.south > southCard.north) {
-                    southCard.opponent = playedCard.opponent;
-                }
+        let southSlot = gameboard.find(gameboardSlot => gameboardSlot.slot === playedSlot.slot && gameboardSlot.row === south);
+        if (southSlot) {
+            if (playedSlot.card.south > southSlot.card.north) {
+                southSlot.card.opponent = playedSlot.card.opponent;
             }
         }
 
-        if (isValidGameBoardIndex(eastSlotIndex)) {
-            let eastCard = gameBoardArray[row][eastSlotIndex];
-            if (eastCard) {
-                if (playedCard.east > eastCard.west) {
-                    eastCard.opponent = playedCard.opponent;
-                }
+        let eastSlot = gameboard.find(gameboardSlot => gameboardSlot.slot === east && gameboardSlot.row === playedSlot.row);
+        if (eastSlot) {
+            if (playedSlot.card.east > eastSlot.card.west) {
+                eastSlot.card.opponent = playedSlot.card.opponent;
             }
         }
 
     }
 
-    function getNextOpponentMove() {
-        for (let row = 0; row < gameBoardArray.length; row++) {
-            for (let slot = 0; slot < gameBoardArray[row].length; slot++) {
-                let cardOnBoard = gameBoardArray[row][slot];
-                if (!cardOnBoard) {
-                    continue;
-                }
-                if (cardOnBoard.opponent) {
-                    continue;
-                }
+    function getNextOpponentMove(){
+        for (const playedCard of gameboard) {
+            console.log(playedCard)
 
-                let northSlotIndex = row - 1;
-                let westSlotIndex = slot - 1;
-                let southSlotIndex = row + 1;
-                let eastSlotIndex = slot + 1;
+            if (playedCard.card.opponent) {
+                continue;
+            }
 
-                if (isValidGameBoardIndex(northSlotIndex) && gameBoardArray[northSlotIndex][slot] === undefined) {
-                    return [northSlotIndex, slot];
-                } else if (isValidGameBoardIndex(westSlotIndex) && gameBoardArray[row][westSlotIndex] === undefined) {
-                    return [row, westSlotIndex];
-                } else if (isValidGameBoardIndex(southSlotIndex) && gameBoardArray[southSlotIndex][slot] === undefined) {
-                    return [southSlotIndex, slot];
-                } else if (isValidGameBoardIndex(eastSlotIndex) && gameBoardArray[row][eastSlotIndex] === undefined) {
-                    return [row, eastSlotIndex];
-                }
+            let north = playedCard.row - 1;
+            let west = playedCard.slot - 1;
+            let south = playedCard.row + 1;
+            let east = playedCard.slot + 1;
 
+            if (isCoordinateValid(north) && !gameboard.find(value => value.row === north && value.slot === playedCard.slot)){
+                return [north, playedCard.slot]
+            } else if (isCoordinateValid(west) && !gameboard.find(value => value.slot === west && value.row === playedCard.row)){
+                return [playedCard.row, west]
+            }else if (isCoordinateValid(south) && !gameboard.find(value => value.slot === south && value.slot === playedCard.slot)){
+                return [south, playedCard.slot]
+            }else if (isCoordinateValid(east) && !gameboard.find(value => value.slot === east && value.row === playedCard.row)){
+                return [playedCard.row, east]
             }
         }
-        return null;
     }
 
-    function isValidGameBoardIndex(index: number) {
-        return index >= 0 && index <= 2;
+    function isCoordinateValid(number: number) {
+        return !(number < 0 || number > 2);
     }
 
-
-    // console.log(cardsOnGameBoard);
 
     return (
         <CardDeckContext.Provider value={cardDeckContextValue}>
 
             <div className="all-content-container">
 
-                {/*<button onClick={() => opponentPlayCardTurn()}>Test</button>*/}
-
                 <div>
                     <div>
                         <OpponentCardsHandList cardDeck={opponentHand}/>
                     </div>
-                    <GameBoardLayout cardsOnGameBoard={cardsOnGameBoard}/>
+                    <GameBoardLayout playerTurn={playerTurn} gameboard={gameboard}/>
                     <div>
                         <CardsInHandList cardDeck={cardHand}/>
                     </div>

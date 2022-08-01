@@ -413,10 +413,10 @@
     "name": "Blue Dragon",
     "level": 4,
     "element": "None",
-    "north": 2,
-    "east": 3,
-    "south": 6,
-    "west": 7,
+    "north": 6,
+    "east": 2,
+    "south": 7,
+    "west": 3,
     "image":"TTBlueDragon.webp"
   },
   {
@@ -604,8 +604,8 @@
     "element": "None",
     "north": 8,
     "east": 2,
-    "south": 2,
-    "west": 8,
+    "south": 8,
+    "west": 2,
     "image":"TTIguion.webp"
   },
   {
