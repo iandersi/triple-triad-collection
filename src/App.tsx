@@ -192,7 +192,7 @@ function App() {
                 return [north, playedCard.slot]
             } else if (isCoordinateValid(west) && !gameboard.find(value => value.slot === west && value.row === playedCard.row)){
                 return [playedCard.row, west]
-            }else if (isCoordinateValid(south) && !gameboard.find(value => value.slot === south && value.slot === playedCard.slot)){
+            }else if (isCoordinateValid(south) && !gameboard.find(value => value.row === south && value.slot === playedCard.slot)){
                 return [south, playedCard.slot]
             }else if (isCoordinateValid(east) && !gameboard.find(value => value.slot === east && value.row === playedCard.row)){
                 return [playedCard.row, east]
@@ -204,11 +204,29 @@ function App() {
         return !(number < 0 || number > 2);
     }
 
+    function checkWinner(){
+        let opponentCards: number = 0;
+        let playerCards: number = 0;
+
+        for (const card of gameboard) {
+
+            if (card.card.opponent){
+                opponentCards++;
+            } else if (!card.card.opponent) {
+                playerCards++;
+            }
+
+            console.log(opponentCards);
+            console.log(playerCards);
+        }
+    }
 
     return (
         <CardDeckContext.Provider value={cardDeckContextValue}>
 
             <div className="all-content-container">
+
+                <button onClick={() => checkWinner()}>Test</button>
 
                 <div>
                     <div>
