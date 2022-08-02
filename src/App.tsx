@@ -10,6 +10,7 @@ import {GameBoardLayout} from "./components/GameBoardLayout";
 import {OpponentCardsHandList} from "./components/OpponentCardsHandList";
 import {useAllCards} from "./hooks/useAllCards";
 import {PlayedCard} from "./models/PlayedCard";
+import {Button, Modal, ModalBody, ModalFooter, ModalTitle} from "react-bootstrap";
 
 type CardDeckContextType = {
     handleCardDelete: (id: string) => void,
@@ -39,12 +40,16 @@ function App() {
     const [ownedCards, setOwnedCards] = useState(cardsOwned);
     const [selectedCardToPlay, setSelectedCardToPlay] = useState<Card>();
     const [gameboard, setGameboard] = useState<PlayedCard[]>([]);
-    console.log(gameboard);
     const selectedCard = cardHand.find(card => card.id === selectedCardId);
 
     const {changeCardModal} = useCardChange(selectedCard, setSelectedCardId, ownedCards);
     const {ownedCardModal, open} = useOwnedCards(ownedCards);
     const {allCardsModal, openModal} = useAllCards(allCards);
+
+    //Match results
+    const [show, setShow]=useState(false);
+    const [outcomeMessage, setOutcomeMessage] = useState("");
+    const handleClose = ()=> setShow(false);
 
     useEffect(()=>{
         setTimeout(() => {
@@ -52,7 +57,6 @@ function App() {
         }, 1000);
     }, [cardHand]);
 
-    // console.log(selectedCardToPlay)
 
     const cardDeckContextValue: CardDeckContextType = {
         handleCardAdd,
@@ -114,6 +118,10 @@ function App() {
         handlePlayerCardRemove(selectedCardToPlay.id);
         setSelectedCardToPlay(undefined);
         console.log(gameboard);
+
+        if (cardHand.length === 1) {
+            checkWinner();
+        }
     }
 
     function opponentTurn(){
@@ -219,6 +227,19 @@ function App() {
             console.log(opponentCards);
             console.log(playerCards);
         }
+
+        if (opponentCards > playerCards) {
+            setOutcomeMessage("You lose!");
+            setShow(true);
+        } else if (playerCards > opponentCards) {
+            setOutcomeMessage("You win!");
+            setShow(true);
+        } else if (opponentCards === playerCards) {
+            setOutcomeMessage("Draw.");
+            setShow(true);
+        }
+
+
     }
 
     return (
@@ -226,7 +247,7 @@ function App() {
 
             <div className="all-content-container">
 
-                <button onClick={() => checkWinner()}>Test</button>
+                {/*<button onClick={() => checkWinner()}>Test</button>*/}
 
                 <div>
                     <div>
@@ -248,6 +269,13 @@ function App() {
             {changeCardModal}
             {ownedCardModal}
             {allCardsModal}
+
+            <Modal show={show} onHide={handleClose}>
+                <ModalBody>{outcomeMessage}</ModalBody>
+                <ModalFooter>
+                    <Button onClick={handleClose}>Close</Button>
+                </ModalFooter>
+            </Modal>
 
         </CardDeckContext.Provider>
     );
