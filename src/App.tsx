@@ -11,6 +11,7 @@ import {OpponentCardsHandList} from "./components/OpponentCardsHandList";
 import {useAllCards} from "./hooks/useAllCards";
 import {PlayedCard} from "./models/PlayedCard";
 import {Button, Modal, ModalBody, ModalFooter, ModalTitle} from "react-bootstrap";
+import {render} from "react-dom";
 
 type CardDeckContextType = {
     handleCardDelete: (id: string) => void,
@@ -26,17 +27,16 @@ export const CardDeckContext = React.createContext<CardDeckContextType>({} as Ca
 const allCards = cardData.map(card => new Card(card.name, card.level, card.element, card.north, card.east, card.south, card.west, card.image, false));
 
 const starterDeck = _.take(_.shuffle(allCards), 5);
-const opponentDeck = _.take(_.shuffle(allCards), 5);
+const starterOpponentDeck = _.take(_.shuffle(allCards), 5).map(card => card.copyCard(true));
 const getRandomCards = _.take(_.shuffle(allCards), 10);
 
 const cardsOwned = [...starterDeck, ...getRandomCards].map(card => card.copyCard(false));
-const opponentCardsOwned = opponentDeck.map(card => card.copyCard(true));
 
 function App() {
 
     const [selectedCardId, setSelectedCardId] = useState<string>();
     const [cardHand, setCardHand] = useState(starterDeck);
-    const [opponentHand, setOpponentHand] = useState(opponentCardsOwned);
+    const [opponentHand, setOpponentHand] = useState(starterOpponentDeck);
     const [ownedCards, setOwnedCards] = useState(cardsOwned);
     const [selectedCardToPlay, setSelectedCardToPlay] = useState<Card>();
     const [gameboard, setGameboard] = useState<PlayedCard[]>([]);
@@ -49,7 +49,11 @@ function App() {
     //Match results
     const [show, setShow]=useState(false);
     const [outcomeMessage, setOutcomeMessage] = useState("");
-    const handleClose = ()=> setShow(false);
+
+    function handleCloseAndReset(){
+        setShow(false);
+    }
+
 
     useEffect(()=>{
         setTimeout(() => {
@@ -239,6 +243,9 @@ function App() {
             setShow(true);
         }
 
+    }
+
+    function tradeRule(){
 
     }
 
@@ -247,7 +254,7 @@ function App() {
 
             <div className="all-content-container">
 
-                {/*<button onClick={() => checkWinner()}>Test</button>*/}
+                {/*<button onClick={()=> checkWinner()}>Test</button>*/}
 
                 <div>
                     <div>
@@ -270,10 +277,12 @@ function App() {
             {ownedCardModal}
             {allCardsModal}
 
-            <Modal show={show} onHide={handleClose}>
-                <ModalBody>{outcomeMessage}</ModalBody>
+            <Modal show={show} onHide={handleCloseAndReset}>
+                <ModalBody>
+                    <div>{outcomeMessage}</div>
+                </ModalBody>
                 <ModalFooter>
-                    <Button onClick={handleClose}>Close</Button>
+                    <Button onClick={handleCloseAndReset}>Close</Button>
                 </ModalFooter>
             </Modal>
 
