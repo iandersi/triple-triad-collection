@@ -1,6 +1,6 @@
 ## About Triple Triad Collection
 
-This is my first app using ReactJS. I made this app to learn how to use React more diversely.
+This is my first bigger ReactJS project. I made this app to learn how to use React more diversely.
 
 Originally I was just going to make a small app that would let you collect cards/keep track of owned cards for the FF8 minigame Triple Triad. 
 
