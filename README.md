@@ -11,6 +11,7 @@ I later decided to try and make this a clone of the actual minigame.
 The game is somewhat playable, but currently the opponent AI is very simple. It's like playing chess with a chicken but worse... so yeah, this is still quite a work in progress. :D
 
 ![img_2.png](img_2.png)
+![img_1.png](img_1.png)
 
 
 ### Known bugs
