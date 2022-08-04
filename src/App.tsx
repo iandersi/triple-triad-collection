@@ -52,6 +52,7 @@ function App() {
 
     function handleCloseAndReset(){
         setShow(false);
+        window.location.reload();
     }
 
 

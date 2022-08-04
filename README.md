@@ -16,6 +16,7 @@ The game is somewhat playable, but currently the opponent AI is very simple. It'
 ### Known bugs
 ```
 - Breaks if you place cards on the gameboard too fast
+- Not responsive atm
 ```
 
 ### Incomplete features
