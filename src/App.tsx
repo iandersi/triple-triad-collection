@@ -11,7 +11,6 @@ import {OpponentCardsHandList} from "./components/OpponentCardsHandList";
 import {useAllCards} from "./hooks/useAllCards";
 import {PlayedCard} from "./models/PlayedCard";
 import {Button, Modal, ModalBody, ModalFooter, ModalTitle} from "react-bootstrap";
-import {render} from "react-dom";
 
 type CardDeckContextType = {
     handleCardDelete: (id: string) => void,

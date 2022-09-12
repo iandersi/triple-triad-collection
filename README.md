@@ -2,13 +2,12 @@
 
 This is my first bigger ReactJS project. I made this app to learn how to use React more diversely.
 
-Originally I was just going to make a small app that would let you collect cards/keep track of owned cards for the FF8 minigame Triple Triad. 
-
-I later decided to try and make this a clone of the actual minigame.
+Originally an app to keep track of owned cards.
+Currently, an attempt at making a Triple Triad clone.
 
 ![img.png](img.png)
 
-The game is somewhat playable, but currently the opponent AI is very simple. It's like playing chess with a chicken but worse... so yeah, this is still quite a work in progress. :D
+The game is somewhat playable, but currently the opponent AI is very simple. It's like playing chess with a chicken but worse... so yeah, this is still quite a work in progress. 
 
 ![img_2.png](img_2.png)
 ![img_1.png](img_1.png)
