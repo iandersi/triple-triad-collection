@@ -1,7 +1,7 @@
 .card.highlight {
     background: #383838;
     color: white;
-    box-shadow: 0 0 15px 15px #f1a961;
+    box-shadow: 0 0 15px 15px rgba(63, 236, 222, 0.5);
     z-index: 1;
     transform: scale(1.05);
 }
@@ -22,6 +22,7 @@
     margin-left: 2px;
     box-sizing: content-box;
     transition: box-shadow 0.3s ease, transform 0.3s ease;
+    background: #4b6c56;
 }
 
 .card-hand {

@@ -1,6 +1,8 @@
 .game-board-container {
     display: flex;
     flex-direction: column;
+    margin-top: 1vh;
+    margin-bottom: 1vh;
 }
 
 .game-board-row {
@@ -13,17 +15,3 @@
     margin: 0;
     padding: 0;
 }
-/*}*/
-
-/*.game-board-row {*/
-/*    display: flex;*/
-/*    justify-content: center;*/
-/*    width: 100%;*/
-/*}*/
-
-/*.game-board-slot {*/
-/*    height: 149px;*/
-/*    width: 115px;*/
-/*    background:darkseagreen;*/
-/*    border: black solid 1px;*/
-/*}*/
