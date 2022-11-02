@@ -5,13 +5,12 @@ This is my first bigger ReactJS project. I made this app to learn how to use Rea
 Originally an app to keep track of owned cards.
 Currently, an attempt at making a Triple Triad clone.
 
-![img.png](img.png)
+![img_3.png](img_3.png)
 
-The game is somewhat playable, but currently the opponent AI is very simple. It's like playing chess with a chicken but worse... so yeah, this is still quite a work in progress. 
+The game is somewhat playable, but currently the opponent AI is very simple. This is still quite a work in progress. 
 
-![img_2.png](img_2.png)
-![img_1.png](img_1.png)
-
+![img_4.png](img_4.png)
+![img_5.png](img_5.png)
 
 ### Known bugs
 ```
